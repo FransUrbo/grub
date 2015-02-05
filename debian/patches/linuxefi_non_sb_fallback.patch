@@ -1,4 +1,4 @@
-From 34d4893c33d118806ebde0a0efbc6c2cd1687dcc Mon Sep 17 00:00:00 2001
+From 001df0878ccd17f7c62568b05c8d8b00883a12b5 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:20 +0000
 Subject: If running under UEFI secure boot, attempt to use linuxefi loader
@@ -13,10 +13,10 @@ Patch-Name: linuxefi_non_sb_fallback.patch
  grub-core/loader/i386/linux.c     | 43 +++++++++++++++++++++++++++++++++++++++
  2 files changed, 44 insertions(+), 1 deletion(-)
 
-Index: grub.zol/grub-core/loader/i386/efi/linux.c
+Index: grub/grub-core/loader/i386/efi/linux.c
 ===================================================================
---- grub.zol.orig/grub-core/loader/i386/efi/linux.c	2014-11-16 19:48:16.388263947 +0100
-+++ grub.zol/grub-core/loader/i386/efi/linux.c	2014-11-16 19:48:16.404263745 +0100
+--- grub.orig/grub-core/loader/i386/efi/linux.c	2015-02-05 17:01:58.448902042 +0100
++++ grub/grub-core/loader/i386/efi/linux.c	2015-02-05 17:01:58.468901788 +0100
 @@ -234,7 +234,7 @@
  
    if (! grub_linuxefi_secure_validate (kernel, filelen))
@@ -26,10 +26,10 @@ Index: grub.zol/grub-core/loader/i386/efi/linux.c
        grub_free (kernel);
        goto fail;
      }
-Index: grub.zol/grub-core/loader/i386/linux.c
+Index: grub/grub-core/loader/i386/linux.c
 ===================================================================
---- grub.zol.orig/grub-core/loader/i386/linux.c	2014-11-16 19:47:02.405194040 +0100
-+++ grub.zol/grub-core/loader/i386/linux.c	2014-11-16 19:48:16.408263695 +0100
+--- grub.orig/grub-core/loader/i386/linux.c	2015-02-05 17:01:00.905625457 +0100
++++ grub/grub-core/loader/i386/linux.c	2015-02-05 17:01:58.468901788 +0100
 @@ -76,6 +76,8 @@
  static struct linux_kernel_params linux_params;
  static char *linux_cmdline;

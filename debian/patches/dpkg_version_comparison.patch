@@ -13,8 +13,8 @@ Patch-Name: dpkg_version_comparison.patch
 
 Index: grub/util/grub-mkconfig_lib.in
 ===================================================================
---- grub.orig/util/grub-mkconfig_lib.in	2015-01-15 08:40:27.293296138 +0100
-+++ grub/util/grub-mkconfig_lib.in	2015-01-15 08:40:39.229146085 +0100
+--- grub.orig/util/grub-mkconfig_lib.in	2015-02-05 17:01:02.973599460 +0100
++++ grub/util/grub-mkconfig_lib.in	2015-02-05 17:01:23.265344357 +0100
 @@ -238,8 +238,9 @@
  
  version_test_gt ()

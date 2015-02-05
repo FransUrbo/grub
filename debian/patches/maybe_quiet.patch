@@ -1,4 +1,4 @@
-From 63e1dfabb116c7582721d4d6ae94749541abfbf4 Mon Sep 17 00:00:00 2001
+From e1ca49b0e7e630f02d56d1be6dc4bd31a3a3fd80 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 13 Jan 2014 12:13:26 +0000
 Subject: Add configure option to reduce visual clutter at boot time
@@ -44,10 +44,10 @@ Patch-Name: maybe_quiet.patch
  util/grub.d/10_linux.in           | 15 +++++++++++----
  9 files changed, 111 insertions(+), 6 deletions(-)
 
-Index: grub.zol/config.h.in
-===================================================================
---- grub.zol.orig/config.h.in	2014-11-16 19:47:02.397194141 +0100
-+++ grub.zol/config.h.in	2014-11-16 19:48:32.844057069 +0100
+diff --git a/config.h.in b/config.h.in
+index 4b63014..247cf11 100644
+--- a/config.h.in
++++ b/config.h.in
 @@ -11,6 +11,8 @@
  /* Define to 1 to enable disk cache statistics.  */
  #define DISK_CACHE_STATS @DISK_CACHE_STATS@
@@ -57,11 +57,11 @@ Index: grub.zol/config.h.in
  
  #if defined (GRUB_BUILD)
  #undef ENABLE_NLS
-Index: grub.zol/configure.ac
-===================================================================
---- grub.zol.orig/configure.ac	2014-11-16 19:47:44.044670560 +0100
-+++ grub.zol/configure.ac	2014-11-16 19:48:32.844057069 +0100
-@@ -1602,6 +1602,17 @@
+diff --git a/configure.ac b/configure.ac
+index fb4e2dd..7c8d0af 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1583,6 +1583,17 @@ else
  fi
  AC_SUBST([UBUNTU_RECOVERY])
  
@@ -79,7 +79,7 @@ Index: grub.zol/configure.ac
  LIBS=""
  
  AC_SUBST([FONT_SOURCE])
-@@ -1864,5 +1875,10 @@
+@@ -1837,5 +1848,10 @@ echo "Without liblzma (no support for XZ-compressed mips images) ($liblzma_excus
  else
  echo "With liblzma from $LIBLZMA (support for XZ-compressed mips images)"
  fi
@@ -90,10 +90,10 @@ Index: grub.zol/configure.ac
 +fi
  echo "*******************************************************"
  ]
-Index: grub.zol/grub-core/boot/i386/pc/boot.S
-===================================================================
---- grub.zol.orig/grub-core/boot/i386/pc/boot.S	2014-11-16 19:47:02.401194091 +0100
-+++ grub.zol/grub-core/boot/i386/pc/boot.S	2014-11-16 19:48:32.848057019 +0100
+diff --git a/grub-core/boot/i386/pc/boot.S b/grub-core/boot/i386/pc/boot.S
+index b4975e2..7ebd96b 100644
+--- a/grub-core/boot/i386/pc/boot.S
++++ b/grub-core/boot/i386/pc/boot.S
 @@ -19,6 +19,9 @@
  
  #include <grub/symbol.h>
@@ -104,7 +104,7 @@ Index: grub.zol/grub-core/boot/i386/pc/boot.S
  
  /*
   *  defines for the code go here
-@@ -249,9 +252,17 @@
+@@ -249,9 +252,17 @@ real_start:
  	/* save drive reference first thing! */
  	pushw	%dx
  
@@ -122,10 +122,10 @@ Index: grub.zol/grub-core/boot/i386/pc/boot.S
  	/* set %si to the disk address packet */
  	movw	$disk_address_packet, %si
  
-Index: grub.zol/grub-core/boot/i386/pc/diskboot.S
-===================================================================
---- grub.zol.orig/grub-core/boot/i386/pc/diskboot.S	2014-11-16 19:47:02.401194091 +0100
-+++ grub.zol/grub-core/boot/i386/pc/diskboot.S	2014-11-16 19:48:32.848057019 +0100
+diff --git a/grub-core/boot/i386/pc/diskboot.S b/grub-core/boot/i386/pc/diskboot.S
+index d030a14..7534991 100644
+--- a/grub-core/boot/i386/pc/diskboot.S
++++ b/grub-core/boot/i386/pc/diskboot.S
 @@ -18,6 +18,9 @@
  
  #include <grub/symbol.h>
@@ -149,7 +149,7 @@ Index: grub.zol/grub-core/boot/i386/pc/diskboot.S
  	.file	"diskboot.S"
  
  	.text
-@@ -50,11 +59,14 @@
+@@ -50,11 +59,14 @@ _start:
  	/* save drive reference first thing! */
  	pushw	%dx
  
@@ -164,7 +164,7 @@ Index: grub.zol/grub-core/boot/i386/pc/diskboot.S
  	/* this sets up for the first run through "bootloop" */
  	movw	$LOCAL(firstlist), %di
  
-@@ -279,7 +291,10 @@
+@@ -279,7 +291,10 @@ LOCAL(copy_buffer):
  	/* restore addressing regs and print a dot with correct DS
  	   (MSG modifies SI, which is saved, and unused AX and BX) */
  	popw	%ds
@@ -175,7 +175,7 @@ Index: grub.zol/grub-core/boot/i386/pc/diskboot.S
  	popa
  
  	/* check if finished with this dataset */
-@@ -295,8 +310,11 @@
+@@ -295,8 +310,11 @@ LOCAL(copy_buffer):
  /* END OF MAIN LOOP */
  
  LOCAL(bootit):
@@ -187,7 +187,7 @@ Index: grub.zol/grub-core/boot/i386/pc/diskboot.S
  	popw	%dx	/* this makes sure %dl is our "boot" drive */
  	ljmp	$0, $(GRUB_BOOT_MACHINE_KERNEL_ADDR + 0x200)
  
-@@ -320,6 +338,14 @@
+@@ -320,6 +338,14 @@ LOCAL(general_error):
  /* go here when you need to stop the machine hard after an error condition */
  LOCAL(stop):	jmp	LOCAL(stop)
  
@@ -202,11 +202,11 @@ Index: grub.zol/grub-core/boot/i386/pc/diskboot.S
  notification_string:	.asciz "loading"
  
  notification_step:	.asciz "."
-Index: grub.zol/grub-core/kern/main.c
-===================================================================
---- grub.zol.orig/grub-core/kern/main.c	2014-11-16 19:47:02.405194040 +0100
-+++ grub.zol/grub-core/kern/main.c	2014-11-16 19:48:32.848057019 +0100
-@@ -264,15 +264,25 @@
+diff --git a/grub-core/kern/main.c b/grub-core/kern/main.c
+index 9cad0c4..5613cd5 100644
+--- a/grub-core/kern/main.c
++++ b/grub-core/kern/main.c
+@@ -264,15 +264,25 @@ reclaim_module_space (void)
  void __attribute__ ((noreturn))
  grub_main (void)
  {
@@ -232,7 +232,7 @@ Index: grub.zol/grub-core/kern/main.c
  
    grub_load_config ();
  
-@@ -308,5 +318,12 @@
+@@ -308,5 +318,12 @@ grub_main (void)
    grub_boot_time ("After execution of embedded config. Attempt to go to normal mode");
  
    grub_load_normal_mode ();
@@ -245,11 +245,11 @@ Index: grub.zol/grub-core/kern/main.c
 +
    grub_rescue_run ();
  }
-Index: grub.zol/grub-core/kern/rescue_reader.c
-===================================================================
---- grub.zol.orig/grub-core/kern/rescue_reader.c	2014-11-16 19:47:02.405194040 +0100
-+++ grub.zol/grub-core/kern/rescue_reader.c	2014-11-16 19:48:32.848057019 +0100
-@@ -78,7 +78,9 @@
+diff --git a/grub-core/kern/rescue_reader.c b/grub-core/kern/rescue_reader.c
+index dcd7d44..03826cf 100644
+--- a/grub-core/kern/rescue_reader.c
++++ b/grub-core/kern/rescue_reader.c
+@@ -78,7 +78,9 @@ grub_rescue_read_line (char **line, int cont,
  void __attribute__ ((noreturn))
  grub_rescue_run (void)
  {
@@ -259,11 +259,11 @@ Index: grub.zol/grub-core/kern/rescue_reader.c
  
    while (1)
      {
-Index: grub.zol/grub-core/normal/main.c
-===================================================================
---- grub.zol.orig/grub-core/normal/main.c	2014-11-16 19:47:02.405194040 +0100
-+++ grub.zol/grub-core/normal/main.c	2014-11-16 19:48:32.848057019 +0100
-@@ -389,6 +389,15 @@
+diff --git a/grub-core/normal/main.c b/grub-core/normal/main.c
+index c36663f..99622cb 100644
+--- a/grub-core/normal/main.c
++++ b/grub-core/normal/main.c
+@@ -381,6 +381,15 @@ static grub_err_t
  grub_normal_read_line_real (char **line, int cont, int nested)
  {
    const char *prompt;
@@ -279,7 +279,7 @@ Index: grub.zol/grub-core/normal/main.c
  
    if (cont)
      /* TRANSLATORS: it's command line prompt.  */
-@@ -441,7 +450,9 @@
+@@ -429,7 +438,9 @@ grub_cmdline_run (int nested)
        return;
      }
  
@@ -289,11 +289,11 @@ Index: grub.zol/grub-core/normal/main.c
  
    while (1)
      {
-Index: grub.zol/grub-core/normal/menu.c
-===================================================================
---- grub.zol.orig/grub-core/normal/menu.c	2014-11-16 19:48:25.628147785 +0100
-+++ grub.zol/grub-core/normal/menu.c	2014-11-16 19:48:32.848057019 +0100
-@@ -826,12 +826,18 @@
+diff --git a/grub-core/normal/menu.c b/grub-core/normal/menu.c
+index 2723547..7b55c27 100644
+--- a/grub-core/normal/menu.c
++++ b/grub-core/normal/menu.c
+@@ -826,12 +826,18 @@ run_menu (grub_menu_t menu, int nested, int *auto_boot)
  
  /* Callback invoked immediately before a menu entry is executed.  */
  static void
@@ -313,7 +313,7 @@ Index: grub.zol/grub-core/normal/menu.c
  }
  
  /* Callback invoked when a default menu entry executed because of a timeout
-@@ -879,6 +885,9 @@
+@@ -879,6 +885,9 @@ show_menu (grub_menu_t menu, int nested, int autobooted)
        int boot_entry;
        grub_menu_entry_t e;
        int auto_boot;
@@ -323,7 +323,7 @@ Index: grub.zol/grub-core/normal/menu.c
  
        boot_entry = run_menu (menu, nested, &auto_boot);
        if (boot_entry < 0)
-@@ -888,7 +897,11 @@
+@@ -888,7 +897,11 @@ show_menu (grub_menu_t menu, int nested, int autobooted)
        if (! e)
  	continue; /* Menu is empty.  */
  
@@ -336,11 +336,11 @@ Index: grub.zol/grub-core/normal/menu.c
  
        if (auto_boot)
  	grub_menu_execute_with_fallback (menu, e, autobooted,
-Index: grub.zol/util/grub.d/10_linux.in
-===================================================================
---- grub.zol.orig/util/grub.d/10_linux.in	2014-11-16 19:48:25.608148037 +0100
-+++ grub.zol/util/grub.d/10_linux.in	2014-11-16 19:48:32.848057019 +0100
-@@ -21,6 +21,7 @@
+diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
+index 1b55116..0616c6d 100644
+--- a/util/grub.d/10_linux.in
++++ b/util/grub.d/10_linux.in
+@@ -21,6 +21,7 @@ prefix="@prefix@"
  exec_prefix="@exec_prefix@"
  datarootdir="@datarootdir@"
  ubuntu_recovery="@UBUNTU_RECOVERY@"
@@ -348,7 +348,7 @@ Index: grub.zol/util/grub.d/10_linux.in
  
  . "@datadir@/@PACKAGE@/grub-mkconfig_lib"
  
-@@ -146,10 +147,12 @@
+@@ -146,10 +147,12 @@ linux_entry ()
      fi
      printf '%s\n' "${prepare_boot_cache}" | sed "s/^/$submenu_indentation/"
    fi
@@ -363,7 +363,7 @@ Index: grub.zol/util/grub.d/10_linux.in
    if test -d /sys/firmware/efi && test -e "${linux}.efi.signed"; then
      sed "s/^/$submenu_indentation/" << EOF
  	linux	${rel_dirname}/${basename}.efi.signed root=${linux_root_device_thisversion} ro ${args}
-@@ -161,9 +164,13 @@
+@@ -161,9 +164,13 @@ EOF
    fi
    if test -n "${initrd}" ; then
      # TRANSLATORS: ramdisk isn't identifier. Should be translated.

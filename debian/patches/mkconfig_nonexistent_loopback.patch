@@ -13,11 +13,11 @@ Patch-Name: mkconfig_nonexistent_loopback.patch
  util/grub.d/30_os-prober.in | 9 +++++----
  2 files changed, 6 insertions(+), 5 deletions(-)
 
-Index: grub.zol/util/grub-mkconfig_lib.in
-===================================================================
---- grub.zol.orig/util/grub-mkconfig_lib.in	2014-11-16 19:47:43.948671751 +0100
-+++ grub.zol/util/grub-mkconfig_lib.in	2014-11-16 19:48:02.664436485 +0100
-@@ -143,7 +143,7 @@
+diff --git a/util/grub-mkconfig_lib.in b/util/grub-mkconfig_lib.in
+index 6da2c2d..5992506 100644
+--- a/util/grub-mkconfig_lib.in
++++ b/util/grub-mkconfig_lib.in
+@@ -143,7 +143,7 @@ prepare_grub_to_access_device ()
          *)
            loop_device="$1"
            shift
@@ -26,11 +26,11 @@ Index: grub.zol/util/grub-mkconfig_lib.in
          ;;
        esac
      ;;
-Index: grub.zol/util/grub.d/30_os-prober.in
-===================================================================
---- grub.zol.orig/util/grub.d/30_os-prober.in	2014-11-16 19:47:44.044670560 +0100
-+++ grub.zol/util/grub.d/30_os-prober.in	2014-11-16 19:48:02.664436485 +0100
-@@ -213,6 +213,11 @@
+diff --git a/util/grub.d/30_os-prober.in b/util/grub.d/30_os-prober.in
+index dd639dd..f8ac363 100644
+--- a/util/grub.d/30_os-prober.in
++++ b/util/grub.d/30_os-prober.in
+@@ -212,6 +212,11 @@ EOF
  	  LINITRD="${LINITRD#/boot}"
  	fi
  
@@ -42,7 +42,7 @@ Index: grub.zol/util/grub.d/30_os-prober.in
  	onstr="$(gettext_printf "(on %s)" "${DEVICE}")"
  	recovery_params="$(echo "${LPARAMS}" | grep 'single\|recovery')" || true
  	counter=1
-@@ -224,10 +229,6 @@
+@@ -223,10 +228,6 @@ EOF
  	fi
  	used_osprober_linux_ids="$used_osprober_linux_ids 'osprober-gnulinux-$LKERNEL-${recovery_params}-$counter-$boot_device_id'"
  

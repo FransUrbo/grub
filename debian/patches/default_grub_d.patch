@@ -13,10 +13,10 @@ Patch-Name: default_grub_d.patch
  util/grub-mkconfig.in         |   5 ++
  2 files changed, 98 insertions(+), 21 deletions(-)
 
-Index: grub.zol/grub-core/osdep/unix/config.c
+Index: grub/grub-core/osdep/unix/config.c
 ===================================================================
---- grub.zol.orig/grub-core/osdep/unix/config.c	2014-11-16 18:33:36.000000000 +0100
-+++ grub.zol/grub-core/osdep/unix/config.c	2014-11-16 18:59:39.972928251 +0100
+--- grub.orig/grub-core/osdep/unix/config.c	2015-01-15 08:42:55.000000000 +0100
++++ grub/grub-core/osdep/unix/config.c	2015-02-05 16:21:39.199320322 +0100
 @@ -24,6 +24,8 @@
  #include <grub/emu/config.h>
  #include <grub/util/install.h>
@@ -131,10 +131,11 @@ Index: grub.zol/grub-core/osdep/unix/config.c
 +	      ptr += 4;
 +	      continue;
 +	    }
-+	  memcpy (ptr, "'; ", 3);
-+	  ptr += 3;
++	  *ptr++ = *iptr;
  	}
-       *ptr++ = *iptr;
+-      *ptr++ = *iptr;
++      memcpy (ptr, "'; ", 3);
++      ptr += 3;
      }
  
 -  strcpy (ptr, "'; printf \"GRUB_ENABLE_CRYPTODISK=%s\\nGRUB_DISTRIBUTOR=%s\\n\" "
@@ -176,10 +177,10 @@ Index: grub.zol/grub-core/osdep/unix/config.c
 +  free (sorted_cfgpaths);
 +  free (cfgdir);
  }
-Index: grub.zol/util/grub-mkconfig.in
+Index: grub/util/grub-mkconfig.in
 ===================================================================
---- grub.zol.orig/util/grub-mkconfig.in	2014-11-16 18:55:12.000000000 +0100
-+++ grub.zol/util/grub-mkconfig.in	2014-11-16 18:56:42.619157851 +0100
+--- grub.orig/util/grub-mkconfig.in	2015-02-05 16:17:40.000000000 +0100
++++ grub/util/grub-mkconfig.in	2015-02-05 16:17:51.106183647 +0100
 @@ -154,6 +154,11 @@
  if test -f ${sysconfdir}/default/grub ; then
    . ${sysconfdir}/default/grub
