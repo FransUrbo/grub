@@ -649,6 +649,8 @@ helptext (const char *line, grub_file_t file, struct syslinux_menu *menu)
   grub_size_t helplen, alloclen = 0;
 
   help = grub_strdup (line);
+  if (!help)
+    return grub_errno;
   helplen = grub_strlen (line);
   while ((grub_free (buf), buf = grub_file_getline (file)))
     {
@@ -682,6 +684,7 @@ helptext (const char *line, grub_file_t file, struct syslinux_menu *menu)
     }
 
   grub_free (buf);
+  grub_free (help);
   return grub_errno;
 }
 
@@ -717,7 +720,7 @@ syslinux_parse_real (struct syslinux_menu *menu)
       for (ptr3 = ptr2;  grub_isspace (*ptr3) && *ptr3; ptr3++);
       for (ptr4 = ptr3; !grub_isspace (*ptr4) && *ptr4; ptr4++);
       for (ptr5 = ptr4;  grub_isspace (*ptr5) && *ptr5; ptr5++);
-      for (i = 0; i < sizeof (commands) / sizeof (commands[0]); i++)
+      for (i = 0; i < ARRAY_SIZE(commands); i++)
 	if (grub_strlen (commands[i].name1) == (grub_size_t) (ptr2 - ptr1)
 	    && grub_strncasecmp (commands[i].name1, ptr1, ptr2 - ptr1) == 0
 	    && (commands[i].name2 == NULL
@@ -726,7 +729,7 @@ syslinux_parse_real (struct syslinux_menu *menu)
 		    && grub_strncasecmp (commands[i].name2, ptr3, ptr4 - ptr3)
 		    == 0)))
 	  break;
-      if (i == sizeof (commands) / sizeof (commands[0]))
+      if (i == ARRAY_SIZE(commands))
 	{
 	  if (sizeof ("text") - 1 == ptr2 - ptr1
 	      && grub_strncasecmp ("text", ptr1, ptr2 - ptr1) == 0
@@ -843,7 +846,12 @@ write_entry (struct output_buffer *outbuf,
 {
   grub_err_t err;
   if (curentry->comments)
-    print (outbuf, curentry->comments, grub_strlen (curentry->comments));
+    {
+      err = print (outbuf, curentry->comments,
+		   grub_strlen (curentry->comments));
+      if (err)
+	return err;
+    }
   {
     struct syslinux_say *say;
     for (say = curentry->say; say && say->next; say = say->next);
@@ -914,6 +922,8 @@ write_entry (struct output_buffer *outbuf,
 
 	    print_string ("\n");
 	  }
+	if (ptr && *ptr)
+	  grub_free (cmdline);
       }
       break;
     case KERNEL_CHAINLOADER:

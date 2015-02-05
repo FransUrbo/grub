@@ -354,6 +354,9 @@ if test x"$target_cpu-$platform" = xsparc64-emu ; then
   HOST_CFLAGS="$HOST_CFLAGS -m64"
 fi
 
+CPPFLAGS="$CPPFLAGS -D_FILE_OFFSET_BITS=64"
+HOST_CPPFLAGS="$HOST_CPPFLAGS -D_FILE_OFFSET_BITS=64"
+
 AC_C_BIGENDIAN
 AC_CHECK_SIZEOF(void *)
 AC_CHECK_SIZEOF(long)
@@ -364,6 +367,14 @@ case "$host_os" in
      CPPFLAGS="$CPPFLAGS -DUNICODE=1 -D_WIN32_WINNT=0x0500"
      AC_CHECK_SIZEOF(TCHAR,,[#include <windows.h>])
    ;;
+esac
+
+case "$host_os" in
+  cygwin | windows* | mingw32* | aros*)
+     ;;
+  *)
+     AC_CHECK_SIZEOF(off_t)
+     test x"$ac_cv_sizeof_off_t" = x8 || AC_MSG_ERROR([Large file support is required]);;
 esac
 
 if test x$USE_NLS = xno; then
@@ -661,6 +672,16 @@ if ( test "x$target_cpu" = xi386 || test "x$target_cpu" = xx86_64 ) && test "x$p
   # Some toolchains enable these features by default, but they need
   # registers that aren't set up properly in GRUB.
   TARGET_CFLAGS="$TARGET_CFLAGS -mno-mmx -mno-sse -mno-sse2 -mno-3dnow"
+fi
+
+# GRUB doesn't use float or doubles at all. Yet some toolchains may decide
+# that floats are a good fit to run instead of what's written in the code.
+# Given that floating point unit is disabled (if present to begin with)
+# when GRUB is running which may result in various hard crashes.
+if test "x$target_cpu" = xarm64; then
+  TARGET_CFLAGS="$TARGET_CFLAGS -march=armv8-a+nofp+nosimd"
+else
+  TARGET_CFLAGS="$TARGET_CFLAGS -msoft-float"
 fi
 
 # By default, GCC 4.4 generates .eh_frame sections containing unwind
@@ -1463,7 +1484,7 @@ fi
 if test x"$grub_mount_excuse" = x ; then
   # Check for fuse headers.
   SAVED_CPPFLAGS="$CPPFLAGS"
-  CPPFLAGS="$CPPFLAGS -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=26"
+  CPPFLAGS="$CPPFLAGS -DFUSE_USE_VERSION=26"
   AC_CHECK_HEADERS([fuse/fuse.h], [],
   	[grub_mount_excuse=["need FUSE headers"]])
   CPPFLAGS="$SAVED_CPPFLAGS"
