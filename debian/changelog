@@ -1,8 +1,9 @@
-grub2 (2.02~beta2-21~gitbac5d.ZOL1) unstable; urgency=medium
+grub2 (2.02~beta2-21~gitc0f52.ZOL1) unstable; urgency=medium
 
   * Merge Debian GNU/Linux changes between 2.02~beta2-9 and 2.02~beta2-21.
     See debian/changelog-1.
   * Change versioning - Amazon S3 can't handle '+'.
+  * New upstream GIT version.
 
  -- Turbo Fredriksson <turbo@bayour.com>  Thu, 05 Feb 2015 15:13:06 +0100
 
